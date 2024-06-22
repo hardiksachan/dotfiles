@@ -1,12 +1,9 @@
 return {
-    "ThePrimeagen/vim-be-good",
+	"ThePrimeagen/vim-be-good",
 
-    dependencies = {
-        "nvim-lua/plenary.nvim"
-    },
+	dependencies = {
+		"nvim-lua/plenary.nvim",
+	},
 
-    config = function()
-    end
+	config = function() end,
 }
-
-
