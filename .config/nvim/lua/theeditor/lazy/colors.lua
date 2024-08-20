@@ -1,5 +1,5 @@
 function ColorMyPencils(color)
-	color = color or "tokyonight"
+	color = color or "catppuccin-macchiato"
 	vim.cmd.colorscheme(color)
 
 	vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
@@ -9,6 +9,23 @@ function ColorMyPencils(color)
 end
 
 return {
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		priority = 1000,
+		config = function()
+			require("catppuccin").setup({
+				integrations = {
+					cmp = true,
+					gitsigns = true,
+					nvimtree = true,
+					treesitter = true,
+					telescope = true,
+					lsp_trouble = true,
+				},
+			})
+		end,
+	},
 	{
 		"folke/tokyonight.nvim",
 		config = function()
@@ -30,7 +47,14 @@ return {
 			})
 		end,
 	},
-
+	{
+		"AlexvZyl/nordic.nvim",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			require("nordic").load()
+		end,
+	},
 	{
 		"rose-pine/neovim",
 		name = "rose-pine",

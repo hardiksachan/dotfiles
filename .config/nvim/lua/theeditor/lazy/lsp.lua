@@ -57,7 +57,7 @@ return {
 			-- Probably want to disable formatting for this lang server
 			tsserver = {
 				server_capabilities = {
-					documentFormattingProvider = false,
+					documentFormattingProvider = true,
 				},
 			},
 			biome = true,

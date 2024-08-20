@@ -68,7 +68,10 @@ alias c='clear'
 
 # Shell integrations
 eval "$(fzf --zsh)"
-eval "$(zoxide init --cmd cd zsh)"
+eval "$(zoxide init --cmd z zsh)"
+
+# g++ stack size limit
+ulimit -s unlimited
 
 # g-install: do NOT edit, see https://github.com/stefanmaric/g
 export GOPATH="$HOME/go";
@@ -80,3 +83,5 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 eval "$(starship init zsh)"
+export PATH="/usr/local/opt/libpq/bin:$PATH"
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
