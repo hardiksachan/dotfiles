@@ -23,6 +23,10 @@ return {
 		local capabilities = nil
 		if pcall(require, "cmp_nvim_lsp") then
 			capabilities = require("cmp_nvim_lsp").default_capabilities()
+			capabilities.textDocument.foldingRange = {
+				dynamicRegistration = false,
+				lineFoldingOnly = true,
+			}
 		end
 
 		local lspconfig = require("lspconfig")
@@ -54,8 +58,7 @@ return {
 			templ = true,
 			cssls = true,
 
-			-- Probably want to disable formatting for this lang server
-			tsserver = {
+			ts_ls = {
 				server_capabilities = {
 					documentFormattingProvider = true,
 				},
@@ -87,13 +90,18 @@ return {
 				server_capabilities = {
 					signatureHelpProvider = false,
 				},
-				cmd = { "clangd", "--compile-commands-dir=." },
+				cmd = { "clangd" },
 				filetypes = { "c", "cpp", "objc", "objcpp" },
 				root_dir = lspconfig.util.root_pattern("compile_commands.json", ".git"),
 				-- init_options = { clangdFileStatus = true },
 				-- filetypes = { "c", "cpp" },
 			},
 			neocmake = {},
+
+			zls = {
+				cmd = { "zls" },
+				filetypes = { "zig", "zon" },
+			},
 		}
 
 		local servers_to_install = vim.tbl_filter(function(key)
@@ -176,16 +184,21 @@ return {
 		require("conform").setup({
 			formatters_by_ft = {
 				lua = { "stylua" },
+				zig = { "zig fmt" },
 			},
 		})
 
 		vim.api.nvim_create_autocmd("BufWritePre", {
+			pattern = "*",
 			callback = function(args)
-				require("conform").format({
-					bufnr = args.buf,
-					lsp_fallback = true,
-					quiet = true,
-				})
+				vim.schedule(function()
+					require("conform").format({
+						bufnr = args.buf,
+						lsp_fallback = true,
+						async = true, -- Ensures asynchronous formatting
+						quiet = true,
+					})
+				end)
 			end,
 		})
 	end,

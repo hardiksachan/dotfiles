@@ -38,6 +38,10 @@ ls.config.set_config({
 	override_builtin = true,
 })
 
+ls.filetype_extend("javascript", { "javascriptreact" })
+ls.filetype_extend("javascript", { "html" })
+ls.filetype_extend("typescript", { "typescriptreact" })
+
 for _, ft_path in ipairs(vim.api.nvim_get_runtime_file("lua/theeditor/snippets/*.lua", true)) do
 	loadfile(ft_path)()
 end
