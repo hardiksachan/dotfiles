@@ -12,9 +12,22 @@ return {
 		vim.o.foldlevelstart = 99
 		vim.o.fillchars = "eob: ,fold: ,foldopen:,foldsep:│,foldclose:"
 	end,
-	opts = {
-		provider_selector = function()
-			return { "lsp", "indent" }
-		end,
-	},
+	config = function()
+		local ufo = require("ufo")
+
+		ufo.setup({
+			provider_selector = function(bufnr, filetype, buftype)
+				return { "lsp", "indent" }
+			end,
+		})
+
+		vim.keymap.set("n", "zR", ufo.openAllFolds, { desc = "Open all folds" })
+		vim.keymap.set("n", "ZM", ufo.closeAllFolds, { desc = "Close all folds" })
+		vim.keymap.set("n", "zK", function()
+			local winid = ufo.peekFoldedLinesUnderCursor()
+			if not winid then
+				vim.lsp.buf.hover()
+			end
+		end, { desc = "Peek Fold" })
+	end,
 }
