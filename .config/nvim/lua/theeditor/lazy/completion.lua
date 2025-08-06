@@ -1,13 +1,52 @@
 return {
+	-- GitHub Copilot with modern inline suggestions
+	{
+		"zbirenbaum/copilot.lua",
+		cmd = "Copilot",
+		event = "InsertEnter",
+		config = function()
+			require("copilot").setup({
+				panel = {
+					enabled = false,
+				},
+				suggestion = {
+					enabled = true,
+					auto_trigger = true,
+					keymap = {
+						accept = "<Tab>",
+						accept_word = false,
+						accept_line = false,
+						next = "<M-]>",
+						prev = "<M-[>",
+						dismiss = "<C-]>",
+					},
+				},
+				filetypes = {
+					markdown = true,
+					help = true,
+				},
+			})
+		end,
+	},
+	{
+		"zbirenbaum/copilot-cmp",
+		dependencies = "copilot.lua",
+		opts = {},
+		config = function(_, opts)
+			local copilot_cmp = require("copilot_cmp")
+			copilot_cmp.setup(opts)
+		end,
+	},
 	{
 		"hrsh7th/nvim-cmp",
-		lazy = false,
+		event = { "InsertEnter", "CmdlineEnter" },
 		priority = 100,
 		dependencies = {
 			"onsails/lspkind.nvim",
 			"hrsh7th/cmp-nvim-lsp",
 			"hrsh7th/cmp-path",
 			"hrsh7th/cmp-buffer",
+			"hrsh7th/cmp-cmdline",
 			{ "L3MON4D3/LuaSnip", build = "make install_jsregexp" },
 			"saadparwaiz1/cmp_luasnip",
 		},
@@ -24,10 +63,11 @@ return {
 
 			cmp.setup({
 				sources = {
-					{ name = "nvim_lsp" },
-					{ name = "cody" },
-					{ name = "path" },
-					{ name = "buffer" },
+					{ name = "copilot", priority = 1000 },
+					{ name = "nvim_lsp", priority = 750 },
+					{ name = "luasnip", priority = 500 },
+					{ name = "path", priority = 250 },
+					{ name = "buffer", priority = 100 },
 				},
 				mapping = {
 					["<C-n>"] = cmp.mapping.select_next_item({ behavior = cmp.SelectBehavior.Insert }),
@@ -49,13 +89,20 @@ return {
 				},
 			})
 
-			-- Setup up vim-dadbod
-			cmp.setup.filetype({ "sql" }, {
+			-- Command line completion
+			cmp.setup.cmdline(":", {
 				sources = {
-					{ name = "vim-dadbod-completion" },
-					{ name = "buffer" },
+					{ name = "cmdline", priority = 1000 },
 				},
 			})
+
+			cmp.setup.cmdline("/", {
+				sources = {
+					{ name = "buffer", priority = 1000 },
+				},
+			})
+
+			-- SQL completion can be added later with proper LSP setup
 		end,
 	},
 }

@@ -65,3 +65,32 @@ vim.keymap.set(
 	"<leader>cp",
 	"<ESC> :w<CR>:!clang++ -fsanitize=address -std=c++17 -Wall -Wextra -Wshadow -DONPC -O2 % -o %<.out && ./%<.out <CR>"
 )
+
+-- Folding keymaps
+vim.keymap.set("n", "zR", ":set foldlevel=99<CR>", { desc = "Open all folds" })
+vim.keymap.set("n", "zM", ":set foldlevel=0<CR>", { desc = "Close all folds" })
+vim.keymap.set("n", "zr", ":set foldlevel+=1<CR>", { desc = "Open one more fold level" })
+vim.keymap.set("n", "zm", ":set foldlevel-=1<CR>", { desc = "Close one more fold level" })
+vim.keymap.set("n", "zo", "za", { desc = "Toggle fold under cursor" })
+vim.keymap.set("n", "zO", "zA", { desc = "Toggle fold under cursor recursively" })
+
+-- Copilot keymaps for better integration
+vim.keymap.set("i", "<Tab>", function()
+	if require("copilot.suggestion").is_visible() then
+		require("copilot.suggestion").accept()
+	else
+		vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<Tab>", true, true, true), "")
+	end
+end, { desc = "Accept Copilot suggestion or insert tab" })
+
+vim.keymap.set("i", "<S-Tab>", function()
+	if require("copilot.suggestion").is_visible() then
+		require("copilot.suggestion").dismiss()
+	else
+		vim.fn.feedkeys(vim.api.nvim_replace_termcodes("<S-Tab>", true, true, true), "")
+	end
+end, { desc = "Dismiss Copilot suggestion or insert shift-tab" })
+
+-- Copilot panel commands
+vim.keymap.set("n", "<leader>cp", "<cmd>Copilot panel<CR>", { desc = "Open Copilot panel" })
+vim.keymap.set("n", "<leader>cs", "<cmd>Copilot status<CR>", { desc = "Show Copilot status" })

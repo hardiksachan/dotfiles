@@ -35,4 +35,20 @@ vim.opt.isfname:append("@-@")
 
 vim.opt.updatetime = 50
 
+-- Performance optimizations
+vim.opt.lazyredraw = true -- Don't redraw while executing macros
+vim.opt.hidden = true -- Allow switching buffers without saving
+vim.opt.backup = false -- Don't create backup files
+vim.opt.swapfile = false -- Don't create swap files
+vim.opt.writebackup = false -- Don't create write backup files
+
 -- vim.opt.conceallevel = 1
+
+-- Folding configuration
+vim.opt.foldenable = true
+vim.opt.foldcolumn = "1"
+vim.opt.foldlevel = 99
+vim.opt.foldlevelstart = 99
+vim.opt.foldmethod = "expr"
+vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
+vim.opt.fillchars = "eob: ,fold: ,foldopen:,foldsep:│,foldclose:"

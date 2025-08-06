@@ -1,5 +1,6 @@
 return {
 	"neovim/nvim-lspconfig",
+	event = { "VeryLazy" },
 	dependencies = {
 		-- vim completions
 		"folke/neodev.nvim",
@@ -68,14 +69,44 @@ return {
 			rust_analyzer = true,
 			svelte = true,
 			templ = true,
-			cssls = true,
-
-			ts_ls = {
-				server_capabilities = {
-					documentFormattingProvider = true,
+			cssls = {
+				settings = {
+					css = {
+						validate = true,
+						lint = {
+							unknownAtRules = "ignore",
+						},
+					},
 				},
 			},
-			biome = true,
+
+			-- Modern TypeScript/JavaScript support
+			ts_ls = {
+				settings = {
+					typescript = {
+						inlayHints = {
+							includeInlayParameterNameHints = "all",
+							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+							includeInlayFunctionParameterTypeHints = true,
+							includeInlayVariableTypeHints = true,
+							includeInlayPropertyDeclarationTypeHints = true,
+							includeInlayFunctionLikeReturnTypeHints = true,
+							includeInlayEnumMemberValueHints = true,
+						},
+					},
+					javascript = {
+						inlayHints = {
+							includeInlayParameterNameHints = "all",
+							includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+							includeInlayFunctionParameterTypeHints = true,
+							includeInlayVariableTypeHints = true,
+							includeInlayPropertyDeclarationTypeHints = true,
+							includeInlayFunctionLikeReturnTypeHints = true,
+							includeInlayEnumMemberValueHints = true,
+						},
+					},
+				},
+			},
 
 			jsonls = {
 				settings = {
@@ -105,8 +136,17 @@ return {
 				cmd = { "clangd" },
 				filetypes = { "c", "cpp", "objc", "objcpp" },
 				root_dir = lspconfig.util.root_pattern("compile_commands.json", ".git"),
-				-- init_options = { clangdFileStatus = true },
-				-- filetypes = { "c", "cpp" },
+				settings = {
+					clangd = {
+						arguments = {
+							"--background-index",
+							"--clang-tidy",
+							"--header-insertion=iwyu",
+							"--completion-style=detailed",
+							"--fallback-style=Google",
+						},
+					},
+				},
 			},
 			neocmake = {},
 
@@ -114,6 +154,30 @@ return {
 				cmd = { "zls" },
 				filetypes = { "zig", "zon" },
 			},
+
+			-- HTML support
+			html = {
+				settings = {
+					html = {
+						format = {
+							templating = true,
+							wrapLineLength = 120,
+							wrapAttributes = "auto",
+						},
+					},
+				},
+			},
+
+			-- Docker support
+			dockerls = {},
+
+			-- Markdown support
+			marksman = {},
+
+			-- SQL support
+			sqlls = {},
+
+			-- Shell script support (bashls is already configured above)
 		}
 
 		local servers_to_install = vim.tbl_filter(function(key)
@@ -127,15 +191,40 @@ return {
 
 		require("mason").setup()
 		local ensure_installed = {
+			-- Formatters
 			"stylua",
-			"lua_ls",
-			"delve",
+			"black",
+			"prettier",
+			"clang_format",
+			"zig",
+			
+			-- Linters
+			"ruff",
 			"cmakelang",
 			"cmakelint",
-			"codelldb",
+			"shellcheck",
+			
+			-- LSP Servers
+			"lua_ls",
+			"typescript-language-server",
 			"pyright",
-			"ruff",
-			"black",
+			"gopls",
+			"rust_analyzer",
+			"clangd",
+			"zls",
+			"templ",
+			"svelte",
+			"cssls",
+			"html",
+			"jsonls",
+			"yamlls",
+			"dockerls",
+			"marksman",
+			"sqlls",
+			
+			-- Debuggers
+			"delve",
+			"codelldb",
 		}
 
 		vim.list_extend(ensure_installed, servers_to_install)
@@ -164,17 +253,18 @@ return {
 					settings = {}
 				end
 
-				local builtin = require("telescope.builtin")
-
 				vim.opt_local.omnifunc = "v:lua.vim.lsp.omnifunc"
-				vim.keymap.set("n", "gd", builtin.lsp_definitions, { buffer = 0 })
-				vim.keymap.set("n", "gr", builtin.lsp_references, { buffer = 0 })
-				vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = 0 })
-				vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, { buffer = 0 })
-				vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = 0 })
-
-				vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = 0 })
-				vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = 0 })
+				
+				-- LSP keymaps (buffer-local for LSP-enabled buffers)
+				-- These work alongside Snacks' global keymaps
+				vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = 0, desc = "Go to definition" })
+				vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = 0, desc = "Go to declaration" })
+				vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = 0, desc = "Show references" })
+				vim.keymap.set("n", "gI", vim.lsp.buf.implementation, { buffer = 0, desc = "Go to implementation" })
+				vim.keymap.set("n", "gT", vim.lsp.buf.type_definition, { buffer = 0, desc = "Go to type definition" })
+				vim.keymap.set("n", "K", vim.lsp.buf.hover, { buffer = 0, desc = "Show hover" })
+				vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { buffer = 0, desc = "Rename symbol" })
+				vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { buffer = 0, desc = "Code action" })
 
 				local filetype = vim.bo[bufnr].filetype
 				if disable_semantic_tokens[filetype] then
@@ -196,26 +286,33 @@ return {
 		})
 
 		-- Autoformatting Setup
-		-- require("conform").setup({
-		-- 	formatters_by_ft = {
-		-- 		lua = { "stylua" },
-		-- 		zig = { "zig fmt" },
-		-- 		python = { "black" },
-		-- 	},
-		-- })
-		--
-		-- vim.api.nvim_create_autocmd("BufWritePre", {
-		-- 	pattern = "*",
-		-- 	callback = function(args)
-		-- 		vim.schedule(function()
-		-- 			require("conform").format({
-		-- 				bufnr = args.buf,
-		-- 				lsp_fallback = true,
-		-- 				async = true, -- Ensures asynchronous formatting
-		-- 				quiet = true,
-		-- 			})
-		-- 		end)
-		-- 	end,
-		-- })
+		require("conform").setup({
+			formatters_by_ft = {
+				lua = { "stylua" },
+				zig = { "zig fmt" },
+				python = { "black" },
+				javascript = { "prettier" },
+				typescript = { "prettier" },
+				json = { "prettier" },
+				yaml = { "prettier" },
+				markdown = { "prettier" },
+				c = { "clang_format" },
+				cpp = { "clang_format" },
+			},
+		})
+
+		vim.api.nvim_create_autocmd("BufWritePre", {
+			pattern = "*",
+			callback = function(args)
+				vim.schedule(function()
+					require("conform").format({
+						bufnr = args.buf,
+						lsp_fallback = true,
+						async = true, -- Ensures asynchronous formatting
+						quiet = true,
+					})
+				end)
+			end,
+		})
 	end,
 }

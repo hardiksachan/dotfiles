@@ -1,4 +1,4 @@
-require("luasnip.session.snippet_collection").clear_snippets("elixir")
+require("luasnip.session.snippet_collection").clear_snippets("typescriptreact")
 
 local ls = require("luasnip")
 

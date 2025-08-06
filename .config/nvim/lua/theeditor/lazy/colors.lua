@@ -9,55 +9,11 @@ function ColorMyPencils(color)
 end
 
 return {
-	{
-		"catppuccin/nvim",
-		name = "catppuccin",
-		priority = 1000,
-		config = function()
-			require("catppuccin").setup({
-				integrations = {
-					cmp = true,
-					gitsigns = true,
-					nvimtree = true,
-					treesitter = true,
-					telescope = true,
-					lsp_trouble = true,
-				},
-			})
-		end,
-	},
-	{
-		"folke/tokyonight.nvim",
-		config = function()
-			require("tokyonight").setup({
-				-- your configuration comes here
-				-- or leave it empty to use the default settings
-				style = "storm", -- The theme comes in three styles, `storm`, `moon`, a darker variant `night` and `day`
-				transparent = true, -- Enable this to disable setting the background color
-				terminal_colors = true, -- Configure the colors used when opening a `:terminal` in Neovim
-				styles = {
-					-- Style to be applied to different syntax groups
-					-- Value is any valid attr-list value for `:help nvim_set_hl`
-					comments = { italic = false },
-					keywords = { italic = false },
-					-- Background styles. Can be "dark", "transparent" or "normal"
-					sidebars = "dark", -- style for sidebars, see below
-					floats = "dark", -- style for floating windows
-				},
-			})
-		end,
-	},
-	{
-		"AlexvZyl/nordic.nvim",
-		lazy = false,
-		priority = 1000,
-		config = function()
-			require("nordic").load()
-		end,
-	},
+	-- Primary colorscheme (load immediately)
 	{
 		"rose-pine/neovim",
 		name = "rose-pine",
+		priority = 1000,
 		config = function()
 			require("rose-pine").setup({
 				disable_background = true,
@@ -67,8 +23,47 @@ return {
 			})
 
 			vim.cmd("colorscheme rose-pine")
-
 			ColorMyPencils()
+		end,
+	},
+	
+	-- Alternative colorschemes (load on demand)
+	{
+		"catppuccin/nvim",
+		name = "catppuccin",
+		cmd = "Catppuccin",
+		config = function()
+			require("catppuccin").setup({
+				integrations = {
+					cmp = true,
+					gitsigns = true,
+					treesitter = true,
+				},
+			})
+		end,
+	},
+	{
+		"folke/tokyonight.nvim",
+		cmd = "TokyoNight",
+		config = function()
+			require("tokyonight").setup({
+				style = "storm",
+				transparent = true,
+				terminal_colors = true,
+				styles = {
+					comments = { italic = false },
+					keywords = { italic = false },
+					sidebars = "dark",
+					floats = "dark",
+				},
+			})
+		end,
+	},
+	{
+		"AlexvZyl/nordic.nvim",
+		cmd = "Nordic",
+		config = function()
+			require("nordic").load()
 		end,
 	},
 }

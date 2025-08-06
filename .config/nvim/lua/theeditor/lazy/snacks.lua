@@ -1,7 +1,7 @@
 return {
 	"folke/snacks.nvim",
 	priority = 1000,
-	lazy = false,
+	event = { "VeryLazy" },
 	---@type snacks.Config
 	opts = {
 		bigfile = { enabled = true },
@@ -444,13 +444,7 @@ return {
 			desc = "Git Browse",
 			mode = { "n", "v" },
 		},
-		{
-			"<leader>gg",
-			function()
-				Snacks.lazygit()
-			end,
-			desc = "Lazygit",
-		},
+		-- Removed lazygit mapping as we're using Neogit now
 		{
 			"<leader>un",
 			function()

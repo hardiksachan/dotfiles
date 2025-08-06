@@ -1,3 +1,7 @@
+-- Performance optimizations
+vim.loader.enable() -- Enable byte-compilation for faster loading
+
+require("theeditor.startup") -- Startup profiling
 require("theeditor.set")
 require("theeditor.remap")
 require("theeditor.lazy_init")
@@ -52,8 +56,7 @@ function OpenFilesInLayout()
 		end
 	end
 
-	-- Disable Copilot
-	vim.cmd("Copilot disable")
+	-- Copilot removed from configuration
 
 	-- Open solution.cpp in the left split taking 70% of the width
 	vim.cmd("e output.txt")
