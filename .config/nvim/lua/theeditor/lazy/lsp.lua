@@ -33,6 +33,18 @@ return {
 
 		local servers = {
 			bashls = true,
+			pyright = {
+				settings = {
+					python = {
+						analysis = {
+							autoImportCompletions = true,
+							useLibraryCodeForTypes = true,
+							typeCheckingMode = "basic",
+						},
+					},
+				},
+			},
+			ruff = {},
 			gopls = {
 				settings = {
 					gopls = {
@@ -121,6 +133,9 @@ return {
 			"cmakelang",
 			"cmakelint",
 			"codelldb",
+			"pyright",
+			"ruff",
+			"black",
 		}
 
 		vim.list_extend(ensure_installed, servers_to_install)
@@ -181,25 +196,26 @@ return {
 		})
 
 		-- Autoformatting Setup
-		require("conform").setup({
-			formatters_by_ft = {
-				lua = { "stylua" },
-				zig = { "zig fmt" },
-			},
-		})
-
-		vim.api.nvim_create_autocmd("BufWritePre", {
-			pattern = "*",
-			callback = function(args)
-				vim.schedule(function()
-					require("conform").format({
-						bufnr = args.buf,
-						lsp_fallback = true,
-						async = true, -- Ensures asynchronous formatting
-						quiet = true,
-					})
-				end)
-			end,
-		})
+		-- require("conform").setup({
+		-- 	formatters_by_ft = {
+		-- 		lua = { "stylua" },
+		-- 		zig = { "zig fmt" },
+		-- 		python = { "black" },
+		-- 	},
+		-- })
+		--
+		-- vim.api.nvim_create_autocmd("BufWritePre", {
+		-- 	pattern = "*",
+		-- 	callback = function(args)
+		-- 		vim.schedule(function()
+		-- 			require("conform").format({
+		-- 				bufnr = args.buf,
+		-- 				lsp_fallback = true,
+		-- 				async = true, -- Ensures asynchronous formatting
+		-- 				quiet = true,
+		-- 			})
+		-- 		end)
+		-- 	end,
+		-- })
 	end,
 }
